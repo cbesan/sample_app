@@ -6,4 +6,18 @@ class User < ActiveRecord::Base
   has_secure_password
   VALID_PASSWORD_REGEX = /\A[A-Z]+[[a-zA-Z]+\d+]+[A-Z]+\z/
   validates :password, length: { minimum: 6 }
+
+  before_create :create_remember_token
+
+  def User.new_remember_token
+    SecureRandom.urlsafe_base64
+  end
+  def User.encrypt(token)
+    Digest::SHA1.hexdigest(token.to_s) # SHA1 faster than bcrypt
+  end
+  private # hidden from everyone except the User model
+  def create_remember_token # 2
+    self.remember_token = User.encrypt(User.new_remember_token) # self = the object being created
+  end
 end
+
