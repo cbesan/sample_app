@@ -2,7 +2,13 @@
 <div class="row">
   <aside class="span4">
     <section>
-      <%= gravatar_for @user %>
+      <div class="gravatar">
+      <% if @user.picture.present? %>
+          <a href="<%= @user.picture_url %>"><%= image_tag(@user.picture_url(:thumb), :width => 52) %></a>
+      <% else %>
+          <%= image_tag("default.png", :width => 52) %>
+      <% end %>
+      </div>
       <h1><%= @user.name %></h1>
       <span><%= link_to "view my profile", @user %></span>
       <span><b>Microposts:</b> <%= @user.microposts.count %></span>
@@ -12,7 +18,13 @@
       <% if @users.any? %>
           <div class="user_avatars">
             <% @users.each do |user| %>
-                <%= link_to gravatar_for(user, size: 30), user %>
+                <div class="gravatar">
+                <% if user.picture.present? %>
+                    <%= image_tag(user.picture_url(:thumb), :width => 30) %>
+                <% else %>
+                    <%= image_tag("default.png", :width => 30) %>
+                <% end %>
+                </div>
             <% end %>
           </div>
       <% end %>

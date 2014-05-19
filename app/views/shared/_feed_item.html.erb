@@ -1,5 +1,11 @@
 <li id="<%= feed_item.id %>">
-  <%= link_to gravatar_for(feed_item.user), feed_item.user %>
+  <div class="gravatar">
+  <% if feed_item.user.picture.present? %>
+      <a href="<%= feed_item.user.picture_url %>"><%= image_tag(feed_item.user.picture_url(:thumb), :width => 52) %></a>
+  <% else %>
+      <%= image_tag("default.png", :width => 52) %>
+  <% end %>
+    </div>
   <span class="user">
     <%= link_to feed_item.user.name, feed_item.user %>
   </span>

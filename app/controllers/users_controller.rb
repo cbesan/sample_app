@@ -63,7 +63,7 @@ class UsersController < ApplicationController
   private # internal to Users controller
   def user_params
     params.require(:user).permit(:name, :email, :password,
-                                 :password_confirmation)
+                                 :password_confirmation,:picture)
   end
   # Before filters
   def signed_in_user

@@ -3,7 +3,14 @@
   <aside class="span4">
     <section>
       <h1>
-        <%= gravatar_for @user %>
+        <div class="gravatar">
+        <% if @user.picture.present? %>
+            <a href="<%= @user.picture_url %>"> <%= image_tag(@user.picture_url(:thumb), :width => 52) %></a>
+        <% else %>
+            <%= image_tag("default.png", :width => 52) %>
+        <% end %>
+        </div>
+
         <%= @user.name %>
       </h1>
     </section>
