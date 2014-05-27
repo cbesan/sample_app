@@ -21,10 +21,12 @@ group :development, :test do
 end
 #gem 'sqlite3'
 
-gem 'carrierwave'
-# gem 'carrierwave_direct', :git => "git://github.com/dwilkie/carrierwave_direct.git"
+#gem 'carrierwave'
+gem 'carrierwave_direct', :git => "git://github.com/dwilkie/carrierwave_direct.git"
 gem 'mini_magick', '3.5.0'
-gem "fog"
+gem "resque"
+gem "redis"
+gem "fog", "~> 1.3.1"
 
 group :test do
   gem 'selenium-webdriver', '2.35.1'

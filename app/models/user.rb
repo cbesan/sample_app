@@ -40,6 +40,33 @@ class User < ActiveRecord::Base
     relationships.find_by(followed_id: other_user.id).destroy
   end
 
+  def save_and_process_picture(options = {})
+    if options[:now]
+      puts "He entrado a guardar desde el worker con el #{self.name} y #{self.id}"
+      self.remote_picture_url = picture.direct_fog_url(:with_path => true)
+      image = MiniMagick::Image.open(self.picture.current_path)
+      image.resize "50x50"
+      image.write "#{self.picture.current_path}"
+      puts "Esta es la url remota #{self.remote_picture_url}"
+      puts "Imagen #{self.picture}"
+      #self.password = '123456789'
+      #self.password_confirmation = '123456789'
+      puts "Contraseña : #{self.password}"
+      puts "Se intenta guardar"
+      if save
+        puts "Se ha guardado en S3"
+      else
+        puts "No se ha guardado"
+      end
+    else
+      puts "He encolado desde el create"
+      puts "He encolado desde el create con contraseña #{self.password}"
+      Resque.enqueue(PictureProcessor, self.id, self.key, self.password)
+      true
+      puts "He salido de la cola desde el create"
+    end
+  end
+
   private # hidden from everyone except the User model
   def create_remember_token # 2
     self.remember_token = User.encrypt(User.new_remember_token) # self = the object being created

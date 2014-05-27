@@ -9,7 +9,7 @@ class UsersController < ApplicationController
     @microposts = @user.microposts.paginate(page: params[:page])
   end
   def new
-    @user = User.new
+    @user = params[:key] ? User.new(picture_params): User.new
   end
 
   def index
@@ -19,20 +19,39 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(user_params) # Not the final implementation!
-    if @user.save
-      sign_in @user
-      flash[:success] = "Welcome to the Sample App!"
-      redirect_to @user
-    else
-      render 'new'
-    end
+    #if @user.save
+    #  Resque.enqueue(PictureProcessor, @user.id, @user.key)
+    #  sign_in @user
+    #  flash[:success] = "Welcome to the Sample App!"
+    #  redirect_to @user
+    #else
+    #  render 'new'
+    #end
+
+      if @user.save
+        @user.save_and_process_picture
+        puts "He guardado"
+        sleep 5
+        sign_in @user
+        flash[:success] = "Welcome to the Sample App!"
+        redirect_to @user
+      else
+        puts "No he podido guardar"
+        render 'new'
+      end
+
   end
 
   def edit
+    @user = User.find(params[:id])
+    if (params[:key])
+      @user.key = params[:key]
+    end
   end
 
   def update
     if @user.update_attributes(user_params)
+      @user.save_and_process_picture
       flash[:success] = "Profile updated"
       redirect_to @user
     else
@@ -63,7 +82,7 @@ class UsersController < ApplicationController
   private # internal to Users controller
   def user_params
     params.require(:user).permit(:name, :email, :password,
-                                 :password_confirmation,:picture)
+                                 :password_confirmation,:picture, :key)
   end
   # Before filters
   def signed_in_user
@@ -80,5 +99,9 @@ class UsersController < ApplicationController
 
   def admin_user
     redirect_to(root_url) unless current_user.admin?
+  end
+
+  def picture_params # add this private method
+    params.permit(:key)
   end
 end

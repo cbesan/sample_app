@@ -12,8 +12,18 @@
         <%= f.password_field :password %>
         <%= f.label :password_confirmation, "Confirmation" %>
         <%= f.password_field :password_confirmation %>
-        <%= f.label :picture %>
-        <%= f.file_field :picture %>
+
+        <% unless @user.has_picture_upload? %> <!-- this is the code to be added -->
+            <%= link_to "Upload Picture", new_picture_path %>
+        <% else %>
+            <%= "File \"#{File.basename(@user.key)}\" has been uploaded  to S3." %>
+            <%= link_to "Upload Picture", new_picture_path %>
+        <% end %>
+
+        <%= f.hidden_field :key %>
+
+        <!--<%= f.label :picture %>
+        <%= f.file_field :picture %>-->
         <%= f.submit "Create my account", class: "btn btn-large btn-primary" %>
     <% end %>
   </div>

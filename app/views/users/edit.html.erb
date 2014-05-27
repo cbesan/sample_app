@@ -18,13 +18,18 @@
         <%= f.label :password_confirmation, "Confirm Password" %>
         <%= f.password_field :password_confirmation %>
 
-        <% if current_user.picture.present? %>
-            <%= image_tag(current_user.picture_url, :width => 52) %>
+        <% unless @user.has_picture_upload? %>
+
+            <%= link_to "Upload Picture", edit_picture_path(:id=>@user.id) %>
+
         <% else %>
-            <%= image_tag("default.png", :width => 52) %>
+            <%= "File \"#{File.basename(@user.key)}\" has been uploaded  to S3." %>
+
+            <%= link_to "Upload Picture", edit_picture_path(:id=>@user.id) %>
+
         <% end %>
 
-        <%= f.file_field :picture %>
+        <%= f.hidden_field :key %>
 
         <%= f.submit "Save changes", class: "btn btn-large btn-primary" %>
     <% end %>
